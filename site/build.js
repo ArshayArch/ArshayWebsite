@@ -41,6 +41,13 @@ function stripComments(md) {
 const esc = (s) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+const slugify = (s) =>
+  s
+    .toLowerCase()
+    .replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 /* Minimal markdown: headings, paragraphs, lists, bold, italic, links.
    Deliberately small — the content files are structurally simple. */
 function inlineMd(s) {
@@ -242,25 +249,53 @@ function loadThoughts() {
     });
 }
 
+/* books.md: "## Read" / "## Currently Reading" / "## Recommended" sections,
+   entries "- Title | Author | note". A cover renders only when a matching
+   image exists at website-content/books/covers/<slug-of-title>.{png,jpg} —
+   run `node site/fetch-covers.js` to pull real covers from Open Library.
+   Entries without a cover file render as text rows, never a placeholder. */
 function loadBooks() {
   const p = path.join(CONTENT, "books.md");
   if (!exists(p)) return [];
-  const sections = parsePipeList("## all\n" + stripComments(read(p)));
-  // books.md uses "- Title | Author | note" with no ## headings
-  const flat = [];
+  const coverDir = path.join(CONTENT, "books", "covers");
+  const coverFor = (title) => {
+    if (!exists(coverDir)) return null;
+    const slug = slugify(title);
+    for (const ext of ["png", "jpg", "jpeg", "webp"]) {
+      const f = `${slug}.${ext}`;
+      if (exists(path.join(coverDir, f))) return { file: f, src: `assets/img/books/${f}` };
+    }
+    return null;
+  };
+  const sections = [];
+  let current = null;
   for (const line of stripComments(read(p)).split("\n")) {
+    const h = line.match(/^##\s+(.*)$/);
+    if (h) {
+      current = { title: h[1].trim(), items: [] };
+      sections.push(current);
+      continue;
+    }
     const m = line.match(/^[-*]\s+(.*)$/);
-    if (!m) continue;
-    const parts = m[1].split("|").map((s) => s.trim());
-    if (parts[0]) flat.push({ title: parts[0], author: parts[1] || "", note: parts[2] || "" });
+    if (m && current) {
+      const parts = m[1].split("|").map((s) => s.trim());
+      if (!parts[0]) continue;
+      current.items.push({
+        title: parts[0],
+        author: parts[1] || "",
+        note: parts[2] || "",
+        cover: coverFor(parts[0]),
+      });
+    }
   }
-  return flat;
+  return sections;
 }
 
 const projects = loadProjects();
 const essays = loadEssays();
 const thoughts = loadThoughts();
 const books = loadBooks();
+const totalBooks = books.reduce((n, s) => n + s.items.length, 0);
 const linkSections = exists(path.join(CONTENT, "links.md"))
   ? parsePipeList(read(path.join(CONTENT, "links.md")))
   : [];
@@ -270,10 +305,13 @@ const socialLinks = linkSections.find((s) => /social/i.test(s.title))?.items || 
 
 /* --------------------------------------------------------------- layout */
 
+/* Books joins the nav only once books.md has real entries — same rule as
+   every other section: nothing ships empty. */
 const NAV = [
   { href: "index.html", label: "Home", id: "home" },
   { href: "portfolio.html", label: "Portfolio", id: "portfolio" },
   { href: "writing.html", label: "Writing", id: "writing" },
+  ...(totalBooks ? [{ href: "books.html", label: "Books", id: "books" }] : []),
   { href: "about.html", label: "CV / About", id: "about" },
 ];
 
@@ -284,6 +322,7 @@ function siteGraph() {
     { id: "home", label: "HOME", href: "index.html", kind: "page" },
     { id: "portfolio", label: "PORTFOLIO", href: "portfolio.html", kind: "page" },
     { id: "writing", label: "WRITING", href: "writing.html", kind: "page" },
+    ...(totalBooks ? [{ id: "books", label: "BOOKS", href: "books.html", kind: "page" }] : []),
     { id: "about", label: "CV / ABOUT", href: "about.html", kind: "page" },
     { id: "cv", label: "CV.PDF", href: "Arshay_Kathpalia_CV.pdf", kind: "file" },
     ...projects.map((p) => ({
@@ -306,6 +345,9 @@ function siteGraph() {
     ["portfolio", "writing"],
     ["portfolio", "about"],
     ["writing", "about"],
+    ...(totalBooks
+      ? [["home", "books"], ["portfolio", "books"], ["writing", "books"], ["books", "about"]]
+      : []),
     ["about", "cv"],
     ...projects.map((p) => ["portfolio", p.slug]),
     ...essays.map((e) => ["writing", `essay-${e.slug}`]),
@@ -546,13 +588,13 @@ function writingPage() {
     <p>Short working notes — questions in progress. Add paragraphs to <code>website-content/thoughts.md</code> and rebuild.</p>
   </div>`;
 
-  const booksHtml = books.length
-    ? `<ul class="books">${books
-        .map(
-          (b) =>
-            `<li><strong>${esc(b.title)}</strong>${b.author ? ` — ${esc(b.author)}` : ""}${b.note ? `<span class="note">${esc(b.note)}</span>` : ""}</li>`
-        )
-        .join("")}</ul>`
+  const booksHtml = totalBooks
+    ? `<div class="work-list">
+  <a class="work-row" href="books.html">
+    <span class="fig">B—</span>
+    <span class="work-title">The reading room has its own sheet</span>
+    <span class="work-year">${totalBooks} BOOK${totalBooks === 1 ? "" : "S"} →</span>
+  </a></div>`
     : `
   <div class="placeholder">
     <span class="k">PLACEHOLDER — READING ROOM</span>
@@ -599,6 +641,73 @@ function essayPage(e) {
     title: `${e.title} — Arshay Kathpalia`,
     desc: e.title,
     sheet: `AK-W ${e.slug.toUpperCase()}`,
+    body,
+  });
+}
+
+/* ---------------------------------------------------------------- books */
+
+function booksPage() {
+  let fig = 0;
+  const sectionsHtml = books
+    .map((sec, si) => {
+      const plated = sec.items.filter((b) => b.cover);
+      const unplated = sec.items.filter((b) => !b.cover);
+
+      const shelf = plated.length
+        ? `<div class="bookshelf">${plated
+            .map((b) => {
+              fig += 1;
+              return `
+  <figure class="book-plate">
+    <div class="book-cover"><img src="${b.cover.src}" alt="Cover of ${esc(b.title)}${b.author ? " by " + esc(b.author) : ""}" loading="lazy"></div>
+    <figcaption>
+      <span class="k">FIG B${String(fig).padStart(2, "0")}</span>
+      <span class="bp-title">${esc(b.title)}</span>
+      ${b.author ? `<span class="bp-author">${esc(b.author)}</span>` : ""}
+      ${b.note ? `<span class="bp-note">${esc(b.note)}</span>` : ""}
+    </figcaption>
+  </figure>`;
+            })
+            .join("")}</div>`
+        : "";
+
+      // entries with no verified cover are listed honestly as text —
+      // never a stand-in image next to the wrong title
+      const rows = unplated.length
+        ? `<ul class="books unplated">${unplated
+            .map(
+              (b) =>
+                `<li><span class="k">UNPLATED</span><strong>${esc(b.title)}</strong>${b.author ? ` — ${esc(b.author)}` : ""}${b.note ? `<span class="note">${esc(b.note)}</span>` : ""}</li>`
+            )
+            .join("")}</ul>`
+        : "";
+
+      const empty = !sec.items.length
+        ? `
+  <div class="placeholder">
+    <span class="k">SECTION EMPTY — NOTHING LISTED YET</span>
+    <p>No titles under “${esc(sec.title)}” so far. Lines added beneath this heading in <code>website-content/books.md</code> appear here on the next build.</p>
+  </div>`
+        : "";
+
+      return `
+  <h2><span class="fig">${String(si + 1).padStart(2, "0")}</span>${esc(sec.title)}</h2>
+  ${shelf}${rows}${empty}`;
+    })
+    .join("\n");
+
+  const body = `
+<section class="band">
+  <h1><span class="fig">B—</span>Books</h1>
+  <p class="lede">The reading room, drawn to plate. Each cover is catalogued as a figure; titles without a verified cover are listed in text until the right edition is confirmed.</p>
+  ${sectionsHtml}
+</section>`;
+  return page({
+    id: "books",
+    title: "Books — Arshay Kathpalia",
+    desc: "The reading room: read, currently reading, and recommended books.",
+    sheet: "AK-B00 BOOKS",
     body,
   });
 }
@@ -691,6 +800,14 @@ for (const p of projects) {
   }
 }
 
+// book covers (fetched by site/fetch-covers.js into website-content/books/covers/)
+const coverDir = path.join(CONTENT, "books", "covers");
+if (exists(coverDir)) {
+  for (const f of fs.readdirSync(coverDir)) {
+    if (/\.(jpe?g|png|webp)$/i.test(f)) copy(path.join(coverDir, f), `assets/img/books/${f}`);
+  }
+}
+
 // generated sitegrab pipeline diagram lives with the other assets
 if (exists(path.join(ASSETS, "sitegrab-pipeline.svg"))) {
   copy(path.join(ASSETS, "sitegrab-pipeline.svg"), "assets/img/sitegrab/pipeline.svg");
@@ -701,8 +818,9 @@ write("portfolio.html", portfolioIndex());
 projects.forEach((p, i) => write(`portfolio-${p.slug}.html`, projectPage(p, i)));
 write("writing.html", writingPage());
 essays.forEach((e) => write(`writing-${e.slug}.html`, essayPage(e)));
+if (totalBooks) write("books.html", booksPage());
 write("about.html", aboutPage());
 
 console.log(
-  `built: ${projects.length} projects, ${essays.length} essays, ${thoughts.length} fragments, ${books.length} books → dist/`
+  `built: ${projects.length} projects, ${essays.length} essays, ${thoughts.length} fragments, ${totalBooks} books → dist/`
 );

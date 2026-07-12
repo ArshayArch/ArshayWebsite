@@ -18,7 +18,7 @@ That's the whole build. `dist/` is disposable — never edit it by hand.
 | ------------------ | ---------------------------------------------------------------------------- |
 | A new essay        | Drop `my-essay.md` into `website-content/writing/` (`# Title`, optional `date: YYYY-MM-DD` line, then body). It gets its own page + an index entry. |
 | A thought/fragment | Add a paragraph to `website-content/thoughts.md` (optionally starting `[YYYY-MM-DD]`). |
-| A book             | Add `- Title \| Author \| note` to `website-content/books.md`.               |
+| A book             | Add `- Title \| Author \| note` under the right `##` section (Read / Currently Reading / Recommended) in `website-content/books.md`, then run `node site/fetch-covers.js` to pull its real cover from Open Library into `website-content/books/covers/`. The Books page (nav entry included) appears once at least one book exists; entries without a verified cover are listed as text, never given a guessed image. |
 | A real URL         | Replace a `TODO` in `website-content/links.md` (SiteGrab, ThinkingPartner, socials). Pending rows go live automatically. |
 | A new CV           | Overwrite `website-content/profile/CV.pdf`.                                  |
 | Project images     | Drop numbered files (`01-name.jpg`) into that project's `images/` folder — they render as figures in filename order, captions from the filename. |
