@@ -1,0 +1,18 @@
+# Local build output — Render rebuilds this via `node site/build.js`
+dist/
+
+# Dependencies (project is zero-dep, but just in case)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor/tool state
+.vscode/
+.idea/
+*.log
+
+# Private — RIBA application must never be published (see repo owner)
+website-content/RIBA_Application_Profile.md

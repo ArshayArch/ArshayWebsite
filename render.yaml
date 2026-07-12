@@ -1,0 +1,8 @@
+# Render blueprint — creates the static site with the right build settings
+# when you connect this repo at https://dashboard.render.com
+services:
+  - type: web
+    name: arshay-kathpalia
+    runtime: static
+    buildCommand: node site/build.js
+    staticPublishPath: dist

@@ -1,0 +1,15 @@
+# Short Bio
+
+Arshay Kathpalia is a Part 1 architectural assistant working at the point where philosophy, physics, and architecture meet. Trained under Valerio Olgiati at Mendrisio and shaped by thinkers like Pallasmaa, Zumthor, and Merleau-Ponty, he treats buildings as arguments about how space is felt, not only how it is built. He also writes the tools that let that thinking scale, from automated site data pipelines to computational spatial analysis.
+
+# Long Bio
+
+I did not arrive at architecture through drafting tables. I arrived at it through a question that physics and philosophy had already put in front of me: what is space, actually, and what does it mean for something to be real to a person standing inside it. Architecture turned out to be the one discipline where that question has to be answered in stone, timber, and light rather than left as an abstraction.
+
+My training reflects that. I spent a year at USI Accademia di Architettura in Mendrisio under Valerio Olgiati, working entirely in Italian, where design is treated as an idea that has to justify every single move it makes. I am now completing a BA (Hons) in Architecture at Oxford Brookes, where my dissertation paired Space Syntax, visibility graph analysis and axial mapping, with phenomenological fieldwork across three sites in Dubai, reading Pallasmaa, Zumthor, Merleau-Ponty, Norberg-Schulz, and Bachelard against what I actually measured on the ground. It was nominated for the RIBA Architecture Today Prize. That project is the clearest statement of what I am trying to do everywhere: hold the measurable and the felt in the same hand instead of choosing one.
+
+The physics and philosophy are not a hobby running alongside the architecture. Feynman taught me to distrust anything I could not rebuild from first principles. Deutsch and Popper taught me that knowledge grows through bold guesses and honest attempts to break them, not through certainty. Plato and Marcus Aurelius taught me that the questions worth asking rarely have tidy endings. I bring that same posture into a studio: propose something, then try seriously to prove it wrong before anyone else has to.
+
+On the practical side, I interned at Emaar in Dubai, working across masterplan development and technical documentation on large scale residential projects, and I have run a freelance architectural visualisation practice since 2022. I am trilingual in English, Italian, and Hindi, and I split my life between London and Dubai. I have also built SiteGrab, a tool that turns an area name alone into a working Rhino model or layered CAD file by pulling and processing OpenStreetMap data automatically, because I think the discipline should build more of its own tools rather than only using the ones it is handed.
+
+If there is a single thread through all of it, philosophy, physics, architecture, and code, it is this: I am trying to find the place where rigorous thought and embodied experience are the same thing, and I want the work I make to be evidence that such a place exists.

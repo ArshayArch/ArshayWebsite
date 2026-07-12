@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430" font-family="IBM Plex Mono, ui-monospace, Consolas, monospace">
+  <style>
+    .box { fill: #ffffff; stroke: #16150f; stroke-width: 1.2; }
+    .soft { fill: #f3f1ec; stroke: #16150f; stroke-width: 1.2; }
+    .out  { fill: #fdeeec; stroke: #c53528; stroke-width: 1.2; }
+    .lbl  { font-size: 13px; fill: #16150f; letter-spacing: .04em; }
+    .sm   { font-size: 10px; fill: #55534a; letter-spacing: .06em; }
+    .red  { fill: #c53528; }
+    .edge { stroke: #16150f; stroke-width: 1; fill: none; }
+    .rede { stroke: #c53528; stroke-width: 1; fill: none; stroke-dasharray: 4 3; }
+  </style>
+
+  <!-- input -->
+  <rect class="soft" x="30" y="60" width="150" height="56"/>
+  <text class="lbl" x="48" y="84">"jericho,</text>
+  <text class="lbl" x="48" y="101"> oxford"</text>
+  <text class="sm" x="30" y="48">INPUT — AREA NAME ONLY</text>
+
+  <!-- geocode -->
+  <rect class="box" x="240" y="60" width="150" height="56"/>
+  <text class="lbl" x="258" y="84">GEOCODE</text>
+  <text class="sm" x="258" y="101">→ bounding box</text>
+
+  <!-- utm -->
+  <rect class="box" x="240" y="170" width="150" height="56"/>
+  <text class="lbl" x="258" y="194">UTM DETECT</text>
+  <text class="sm" x="258" y="211">auto projection</text>
+
+  <!-- osm fetch -->
+  <rect class="box" x="450" y="115" width="170" height="66"/>
+  <text class="lbl" x="468" y="140">OSM FETCH</text>
+  <text class="sm" x="468" y="157">buildings · roads</text>
+  <text class="sm" x="468" y="171">water</text>
+  <text class="sm red" x="450" y="103">RETRY LOGIC + MIRROR FAILOVER</text>
+
+  <!-- process -->
+  <rect class="box" x="450" y="240" width="170" height="56"/>
+  <text class="lbl" x="468" y="264">PROCESS</text>
+  <text class="sm" x="468" y="281">project · clean · layer</text>
+
+  <!-- outputs -->
+  <rect class="out" x="720" y="150" width="240" height="70"/>
+  <text class="lbl" x="738" y="175">2D — LAYERED DXF</text>
+  <text class="sm" x="738" y="192">granular named layers</text>
+  <text class="sm" x="738" y="206">ready for CAD</text>
+
+  <rect class="out" x="720" y="255" width="240" height="70"/>
+  <text class="lbl" x="738" y="280">3D — RHINO .3DM</text>
+  <text class="sm" x="738" y="297">solid massing · raised roads</text>
+  <text class="sm" x="738" y="311">flat water curves</text>
+
+  <!-- backend note -->
+  <rect class="soft" x="720" y="60" width="240" height="42"/>
+  <text class="sm" x="738" y="78">BACKEND: FASTAPI IN DOCKER</text>
+  <text class="sm" x="738" y="92">deployed — no local setup</text>
+
+  <!-- edges -->
+  <path class="edge" d="M180 88 H240" marker-end="url(#a)"/>
+  <path class="edge" d="M315 116 V170" marker-end="url(#a)"/>
+  <path class="edge" d="M390 88 H430 V138 L450 138" marker-end="url(#a)"/>
+  <path class="edge" d="M390 198 H430 V158 L450 158" marker-end="url(#a)"/>
+  <path class="edge" d="M535 181 V240" marker-end="url(#a)"/>
+  <path class="edge" d="M620 268 H680 V185 L720 185" marker-end="url(#a)"/>
+  <path class="edge" d="M620 285 H680 V290 L720 290" marker-end="url(#a)"/>
+  <path class="rede" d="M620 132 H660 V148 M660 132 H700 V150" />
+
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#16150f"/>
+    </marker>
+  </defs>
+
+  <!-- caption row -->
+  <line x1="30" y1="370" x2="960" y2="370" stroke="#16150f" stroke-width="1"/>
+  <text class="sm" x="30" y="392">SITEGRAB — OSM → CAD PIPELINE. DIAGRAM GENERATED FROM THE TOOL'S ACTUAL STAGES; NOT A RENDER.</text>
+  <text class="sm red" x="30" y="410">ONE INPUT. TWO OUTPUTS. THE FIRST HOUR OF EVERY PROJECT, RETURNED.</text>
+</svg>
