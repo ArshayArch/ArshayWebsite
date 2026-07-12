@@ -31,7 +31,13 @@ const FORCE = process.argv.includes("--force");
 const UA = "arshaykathpalia-site-build (kathpaliaarshay@gmail.com)";
 
 const slugify = (s) =>
-  s.toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 /* loose normalisation for matching only — never shown anywhere */
 const norm = (s) =>
@@ -81,24 +87,45 @@ function parseBooks() {
    catalogued under their original-language title (Frankl's is German),
    so when a work's own title doesn't match we walk its editions and
    match the edition titles instead, preferring English printings. */
+/* edit distance, small-case only — tolerates one-letter transliteration
+   variants of long surnames (Dostoevsky/Dostoyevsky) without ever
+   accepting a genuinely different name */
+function editDistance(a, b) {
+  if (Math.abs(a.length - b.length) > 1) return 2;
+  const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
+  return dp[a.length][b.length];
+}
+
 async function findCover(title, author) {
   const t = norm(title);
   const surname = norm(author).split(" ").pop();
+  const surnameOk = (w) =>
+    w === surname || (surname.length >= 6 && w.length >= 6 && editDistance(w, surname) <= 1);
   const authorOk = (d) =>
-    (d.author_name || []).some((a) => norm(a).split(" ").includes(surname));
+    (d.author_name || []).some((a) => norm(a).split(" ").some(surnameOk));
 
   const q =
     `https://openlibrary.org/search.json?q=${encodeURIComponent(`${title} ${author}`)}` +
     `&limit=10&fields=key,title,author_name,cover_i,edition_count`;
   const docs = (JSON.parse((await get(q)).toString()).docs || []).filter(authorOk);
 
-  // exact work-title match with its own cover: done
+  // a work's default cover can be any edition's — including a foreign
+  // translation — so even on an exact work-title match we walk the
+  // editions for an English printing and use the work cover only as a
+  // last resort
   const direct = docs.find((d) => d.title && norm(d.title) === t && d.cover_i);
-  if (direct) return { coverId: direct.cover_i, via: direct.title };
 
-  // otherwise inspect the editions of the biggest matching works
   const byEditions = [...docs].sort((a, b) => (b.edition_count || 0) - (a.edition_count || 0));
-  for (const work of byEditions.slice(0, 3)) {
+  const candidates = [...new Set([...(direct ? [direct] : []), ...byEditions.slice(0, 3)])];
+  for (const work of candidates) {
     if (!work.key) continue;
     const eds =
       JSON.parse((await get(`https://openlibrary.org${work.key}/editions.json?limit=200`)).toString())
@@ -119,6 +146,7 @@ async function findCover(title, author) {
     const ed = pool.sort((a, b) => year(b) - year(a))[0];
     return { coverId: ed.covers.find((c) => c > 0), via: `${work.title} → edition ${ed.title}` };
   }
+  if (direct) return { coverId: direct.cover_i, via: `${direct.title} (work default cover)` };
   return null;
 }
 

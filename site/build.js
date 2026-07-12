@@ -43,6 +43,8 @@ const esc = (s) =>
 
 const slugify = (s) =>
   s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
     .replace(/['’]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
