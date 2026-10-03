@@ -420,7 +420,7 @@ function homePage() {
     <h1>Architecture, physics and philosophy,<br>held in the same hand.</h1>
     <div class="hero-bio">${md(shortBio)}</div>
     <p class="hero-links">
-      <a class="btn" href="portfolio.html">Portfolio →</a>
+      <a class="btn" href="full-portfolio.pdf" target="_blank" rel="noopener">Portfolio (PDF) →</a>
       <a class="btn ghost" href="Arshay_Kathpalia_CV.pdf" download>Download CV (PDF)</a>
     </p>
   </div>
@@ -490,7 +490,7 @@ function portfolioIndex() {
   <h1><span class="fig">P—</span>Portfolio</h1>
   <p class="lede">Five projects. Three buildings, one temporary structure, one piece of software — the last treated with the same weight as the first four, because building the tools is part of the work.</p>
   <div class="cards">${cards}</div>
-  <p class="aside">The complete document, with full drawing sets: <a href="full-portfolio.pdf">full portfolio (PDF, 50&nbsp;MB)</a>.</p>
+  <p class="aside">The complete document, with full drawing sets: <a href="full-portfolio.pdf" target="_blank" rel="noopener">full portfolio (PDF, 47&nbsp;MB)</a>.</p>
 </section>`;
   return page({
     id: "portfolio",
