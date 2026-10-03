@@ -1,0 +1,12 @@
+# Objective knowledge
+date: 2026-06-21
+
+*How do we know things? And how can we know better?*
+
+In my research behind the way of knowing, or epistemology of knowledge, the first question to ask is, ‘What is unique to us humans?’ We have the ability to be creative. Any other animal purely reacts based on available information; humans, however, have accidentally evolved to explain things, creating myths to explain the chaotic environment they were in, and in the process of explaining physical phenomena by conjecturing guesses, we have developed a means of gaining knowledge and understanding things. In other words, our ability to explain things for what they really are and provide explanations enables us to produce knowledge and therefore be creative… Create things… know things.
+
+The immediate next question is finding an explanation is subjective… How can we know it is true? Just like the Darwinian view of the theory of evolution, a particular phenomenon was explained by several guesses by different subjects, and the most *useful explanation survived,* and by definition, whether truly objectively true or not, we can never know, but this explanation would be the most reliable, as the truest experimental device known to reality (nature itself, of course) renders all other explanations false. Alternatively put, knowing the true explanation is impossible, the ultimate test can agree with your “true” theory, but several theories could be put forward, giving the same true outcome. On the contrary, a theory needs only show one false outcome for it to be refuted, and so, by a theory surviving, we can assure it hasn’t yet been refuted and deduce that, AS OF NOW, this is our best explanation and therefore, AS OF NOW, it is the truest.
+
+This process gets rid of the principle of optimism. Now an inductivist might argue, based on a theory surviving past tests, that you are applying it to the future. This is now converted into a game of semantics; the dimension of time is irrelevant to all other theories being refuted by way of criticism and tests, leaving the best theories alive, which are not claimed to be true but the truest we have for now. There should still be problems to guess the solution at and come up with better theories, and so on goes this infinite cycle of knowledge creation. The end of this line does not exist – not to the human realm of current capabilities, at least.
+
+*Originally published on [Substack](https://arshay333.substack.com/p/objective-knowledge).*

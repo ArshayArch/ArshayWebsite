@@ -231,7 +231,8 @@ function loadEssays() {
       const slug = f.replace(/\.md$/, "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
       return { title, date, body, slug };
     })
-    .filter((e) => e.body.length > 0);
+    .filter((e) => e.body.length > 0)
+    .sort((a, b) => b.date.localeCompare(a.date));
 }
 
 function loadThoughts() {
